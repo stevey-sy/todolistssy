@@ -6,3 +6,5 @@ data class Todo(
     val createdAt: Long,
     val completedAt: Long
 )
+
+fun Todo.isCompleted(): Boolean = this.completedAt != 0L
