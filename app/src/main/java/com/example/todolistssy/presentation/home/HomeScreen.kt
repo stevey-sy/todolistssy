@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.todolistssy.domain.data.Todo
+import com.example.todolistssy.presentation.home.TodoUiModel
 
 @Composable
 fun HomeScreen(
@@ -87,7 +88,7 @@ fun HomeScreen(
 
 @Composable
 fun TodoItem(
-    todo: Todo,
+    todo: TodoUiModel,
     onCheckedChange: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -117,7 +118,6 @@ fun TodoItem(
             ) {
                 Button(
                     onClick = onDelete,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
                 ) {
                     Text("삭제", color = Color.White)
                 }

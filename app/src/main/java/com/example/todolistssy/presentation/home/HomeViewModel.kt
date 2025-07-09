@@ -7,13 +7,15 @@ import com.example.todolistssy.domain.usecase.AddTodoUseCase
 import com.example.todolistssy.domain.usecase.CompleteTodoUseCase
 import com.example.todolistssy.domain.usecase.DeleteTodoUseCase
 import com.example.todolistssy.domain.usecase.GetTodoListUseCase
+import com.example.todolistssy.presentation.home.TodoUiModel
+import com.example.todolistssy.presentation.home.TodoMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class HomeState(
-    val todoList: List<Todo> = emptyList(),
+    val todoList: List<TodoUiModel> = emptyList(),
     val input: String = "",
     val isLoading: Boolean = false,
     val error: String? = null
@@ -71,7 +73,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.LoadTodos -> {
                 viewModelScope.launch {
                     getTodoListUseCase().collect { todos ->
-                        _state.update { it.copy(todoList = todos) }
+                        _state.update { it.copy(todoList = TodoMapper.toUiModelList(todos)) }
                     }
                 }
             }
