@@ -1,13 +1,13 @@
 package com.example.todolistssy.data.repository
 
-
 import com.example.todolistssy.domain.data.Todo
 import kotlinx.coroutines.flow.Flow
 
 interface TodoRepository {
-    fun getUncompletedTodoList(): Flow<List<Todo>>
-    fun getCompletedTodoList(): Flow<List<Todo>>
-    suspend fun insertTodo(todo: Todo)
+    suspend fun addTodo(content: String)
+    suspend fun deleteTodo(id: Int)
+    suspend fun completeTodo(todo: Todo)
     suspend fun updateTodo(todo: Todo)
-    suspend fun deleteDodoById(id: Int)
+    fun getTodos(): Flow<List<Todo>>
+    fun getCompletedTodos(): Flow<List<Todo>>
 }

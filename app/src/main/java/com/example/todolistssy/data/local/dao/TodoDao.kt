@@ -1,30 +1,23 @@
 package com.example.todolistssy.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.example.todolistssy.data.local.entity.TodoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
+    @Query("SELECT * FROM todos WHERE completedAt = 0 ORDER BY createdAt DESC")
+    fun getAllTodos(): Flow<List<TodoEntity>>
 
-    @Query("SELECT * FROM todo WHERE completedAt IS NULL ORDER BY createdAt DESC")
-    fun getUncompletedTodoList(): Flow<List<TodoEntity>>
+    @Query("SELECT * FROM todos WHERE completedAt > 0 ORDER BY completedAt DESC")
+    fun getCompletedTodos(): Flow<List<TodoEntity>>
 
-    @Query("SELECT * FROM todo WHERE completedAt IS NOT NULL ORDER BY completedAt DESC")
-    fun getCompletedTodoList(): Flow<List<TodoEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTodo(todo: TodoEntity)
+    @Insert
+    suspend fun insert(todo: TodoEntity)
 
     @Update
-    suspend fun updateTodo(todo: TodoEntity)
+    suspend fun update(todo: TodoEntity)
 
-    @Query("DELETE FROM todo WHERE id = :id")
-    suspend fun deleteTodo(id: Int)
-
-
+    @Query("DELETE FROM todos WHERE id = :id")
+    suspend fun deleteById(id: Int)
 }

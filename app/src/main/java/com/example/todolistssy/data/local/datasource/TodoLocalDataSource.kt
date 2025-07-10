@@ -1,17 +1,13 @@
 package com.example.todolistssy.data.local.datasource
 
-import com.example.todolistssy.data.local.entity.TodoEntity
+import com.example.todolistssy.domain.data.Todo
 import kotlinx.coroutines.flow.Flow
 
 interface TodoLocalDataSource {
-
-    fun getUncompletedTodoList(): Flow<List<TodoEntity>>
-
-    fun getCompletedTodoList(): Flow<List<TodoEntity>>
-
-    suspend fun updateTodo(todo: TodoEntity)
-
-    suspend fun insertTodo(todo: TodoEntity)
-
+    suspend fun addTodo(content: String)
     suspend fun deleteTodo(id: Int)
+    suspend fun completeTodo(todo: Todo)
+    suspend fun updateTodo(todo: Todo)
+    fun getTodos(): Flow<List<Todo>>
+    fun getCompletedTodos(): Flow<List<Todo>>
 }

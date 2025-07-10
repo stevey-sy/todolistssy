@@ -1,39 +1,35 @@
 package com.example.todolistssy.data.repository
 
-
 import com.example.todolistssy.data.local.datasource.TodoLocalDataSource
-import com.example.todolistssy.data.mapper.TodoMapper
 import com.example.todolistssy.domain.data.Todo
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import jakarta.inject.Inject
+import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
-    private val todoLocalDataSource: TodoLocalDataSource,
-    private val todoMapper: TodoMapper
+    private val todoLocalDataSource: TodoLocalDataSource
 ) : TodoRepository {
-    
-    override fun getUncompletedTodoList(): Flow<List<Todo>> {
-        return todoLocalDataSource.getUncompletedTodoList()
-            .map { entityList -> todoMapper.mapToDomainList(entityList) }
+
+    override suspend fun addTodo(content: String) {
+        todoLocalDataSource.addTodo(content)
     }
-    
-    override fun getCompletedTodoList(): Flow<List<Todo>> {
-        return todoLocalDataSource.getCompletedTodoList()
-            .map { entityList -> todoMapper.mapToDomainList(entityList) }
-    }
-    
-    override suspend fun insertTodo(todo: Todo) {
-        val entity = todoMapper.mapToEntity(todo)
-        todoLocalDataSource.insertTodo(entity)
-    }
-    
-    override suspend fun updateTodo(todo: Todo) {
-        val entity = todoMapper.mapToEntity(todo)
-        todoLocalDataSource.updateTodo(entity)
-    }
-    
-    override suspend fun deleteDodoById(id: Int) {
+
+    override suspend fun deleteTodo(id: Int) {
         todoLocalDataSource.deleteTodo(id)
+    }
+
+    override suspend fun completeTodo(todo: Todo) {
+        todoLocalDataSource.completeTodo(todo)
+    }
+
+    override suspend fun updateTodo(todo: Todo) {
+        todoLocalDataSource.updateTodo(todo)
+    }
+
+    override fun getTodos(): Flow<List<Todo>> {
+        return todoLocalDataSource.getTodos()
+    }
+
+    override fun getCompletedTodos(): Flow<List<Todo>> {
+        return todoLocalDataSource.getCompletedTodos()
     }
 }

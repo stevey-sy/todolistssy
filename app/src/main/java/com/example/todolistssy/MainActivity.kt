@@ -22,6 +22,14 @@ import com.example.todolistssy.presentation.home.HomeViewModel
 import com.example.todolistssy.ui.theme.TodolistssyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.todolistssy.presentation.history.HistoryScreen
+import com.example.todolistssy.presentation.history.HistoryViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -31,7 +39,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodolistssyTheme {
+                var isHistoryScreen by remember { mutableStateOf(false) }
                 val homeViewModel: HomeViewModel = hiltViewModel()
+                val historyViewModel: HistoryViewModel = hiltViewModel()
+                
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
@@ -39,25 +50,42 @@ class MainActivity : ComponentActivity() {
                             title = {
                                 Text(text = stringResource(id = R.string.app_title))
                             },
-                            actions = {
-                                IconButton(
-                                    onClick = {
-                                        // TODO: History 화면으로 이동 또는 기능 추가
+                            navigationIcon = {
+                                if (isHistoryScreen) {
+                                    IconButton(onClick = { isHistoryScreen = false }) {
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowBack,
+                                            contentDescription = "뒤로가기"
+                                        )
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = AppIcons.History,
-                                        contentDescription = "History"
-                                    )
+                                }
+                            },
+                            actions = {
+                                if (!isHistoryScreen) {
+                                    IconButton(
+                                        onClick = { isHistoryScreen = true }
+                                    ) {
+                                        Icon(
+                                            imageVector = AppIcons.History,
+                                            contentDescription = "History"
+                                        )
+                                    }
                                 }
                             }
                         )
                     }
                 ) { innerPadding ->
-                    HomeScreen(
-                        viewModel = homeViewModel,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    if (isHistoryScreen) {
+                        HistoryScreen(
+                            viewModel = historyViewModel,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    } else {
+                        HomeScreen(
+                            viewModel = homeViewModel,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

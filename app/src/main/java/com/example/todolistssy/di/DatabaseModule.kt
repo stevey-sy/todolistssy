@@ -3,6 +3,7 @@ package com.example.todolistssy.di
 import android.content.Context
 import androidx.room.Room
 import com.example.todolistssy.data.local.AppDatabase
+import com.example.todolistssy.data.local.CryptoManager
 import com.example.todolistssy.data.local.dao.TodoDao
 import com.example.todolistssy.data.local.datasource.TodoLocalDataSource
 import com.example.todolistssy.data.local.datasource.TodoLocalDataSourceImpl
@@ -22,38 +23,45 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
-        return AppDatabase.getDatabase(context)
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "todo_database"
+        ).build()
     }
 
     @Provides
-    @Singleton
     fun provideTodoDao(database: AppDatabase): TodoDao {
         return database.todoDao()
     }
 
     @Provides
     @Singleton
-    fun provideTodoLocalDataSource(
-        todoDao: TodoDao
-    ): TodoLocalDataSource {
-        return TodoLocalDataSourceImpl(todoDao)
+    fun provideCryptoManager(): CryptoManager {
+        return CryptoManager()
     }
 
     @Provides
     @Singleton
-    fun provideTodoMapper(): TodoMapper {
-        return TodoMapper()
+    fun provideTodoMapper(cryptoManager: CryptoManager): TodoMapper {
+        return TodoMapper(cryptoManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTodoLocalDataSource(
+        todoDao: TodoDao,
+        todoMapper: TodoMapper
+    ): TodoLocalDataSource {
+        return TodoLocalDataSourceImpl(todoDao, todoMapper)
     }
 
     @Provides
     @Singleton
     fun provideTodoRepository(
-        todoLocalDataSource: TodoLocalDataSource,
-        todoMapper: TodoMapper
+        todoLocalDataSource: TodoLocalDataSource
     ): TodoRepository {
-        return TodoRepositoryImpl(todoLocalDataSource, todoMapper)
+        return TodoRepositoryImpl(todoLocalDataSource)
     }
 } 
