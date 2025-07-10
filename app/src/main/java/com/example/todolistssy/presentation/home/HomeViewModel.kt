@@ -77,7 +77,12 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.DeleteTodo -> {
                 viewModelScope.launch {
                     deleteTodoUseCase(intent.id)
-                    handleIntent(HomeIntent.LoadTodos)
+                    // LoadTodos 대신 직접 상태에서 삭제된 아이템 제거
+                    _state.update { currentState ->
+                        currentState.copy(
+                            todoList = currentState.todoList.filter { it.id != intent.id }
+                        )
+                    }
                 }
             }
             is HomeIntent.ShowDeleteButton -> {
@@ -109,8 +114,9 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.LoadTodos -> {
                 viewModelScope.launch {
                     getTodoListUseCase().collect { todos ->
-                        val todoUiModels = TodoMapper.toUiModelList(todos).map {
-                            it.copy(isDeleteMode = false)
+                        val currentDeleteModes = _state.value.todoList.associate { it.id to it.isDeleteMode }
+                        val todoUiModels = TodoMapper.toUiModelList(todos).map { newTodo ->
+                            newTodo.copy(isDeleteMode = currentDeleteModes[newTodo.id] ?: false)
                         }
                         _state.update { it.copy(todoList = todoUiModels) }
                     }
