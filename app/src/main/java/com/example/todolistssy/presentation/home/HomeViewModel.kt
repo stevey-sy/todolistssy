@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 data class HomeState(
     val todoList: List<TodoUiModel> = emptyList(),
@@ -70,8 +71,52 @@ class HomeViewModel @Inject constructor(
             }
             is HomeIntent.ToggleComplete -> {
                 viewModelScope.launch {
-//                    completeTodoUseCase(intent.id)
-//                    handleIntent(HomeIntent.LoadTodos)
+                    // 현재 TodoUiModel 찾기
+                    val currentTodo = _state.value.todoList.find { it.id == intent.id }
+                    if (currentTodo != null) {
+                        // 1. UI 상태 즉시 업데이트 (체크박스 채우기)
+                        _state.update { currentState ->
+                            currentState.copy(
+                                todoList = currentState.todoList.map { todo ->
+                                    if (todo.id == intent.id) {
+                                        todo.copy(isCompleted = !todo.isCompleted)
+                                    } else {
+                                        todo
+                                    }
+                                }
+                            )
+                        }
+                        
+                        // 2. 체크박스 애니메이션이 완료될 때까지 대기
+                        delay(600)
+                        
+                        // 3. 데이터베이스 업데이트
+                        val updatedTodo = TodoMapper.toToggleCompleteTodo(currentTodo)
+                        completeTodoUseCase(updatedTodo)
+                        
+                        // 4. 완료된 아이템이면 슬라이드 아웃 상태로 변경
+                        if (!currentTodo.isCompleted) { // 체크하는 경우 (미완료 -> 완료)
+                            _state.update { currentState ->
+                                currentState.copy(
+                                    todoList = currentState.todoList.map { todo ->
+                                        if (todo.id == intent.id) {
+                                            todo.copy(isSlideOut = true)
+                                        } else {
+                                            todo
+                                        }
+                                    }
+                                )
+                            }
+                            
+                            // 5. 슬라이드 애니메이션 완료 후 아이템 제거
+                            delay(500)
+                            _state.update { currentState ->
+                                currentState.copy(
+                                    todoList = currentState.todoList.filter { it.id != intent.id }
+                                )
+                            }
+                        }
+                    }
                 }
             }
             is HomeIntent.DeleteTodo -> {
@@ -116,7 +161,7 @@ class HomeViewModel @Inject constructor(
                     getTodoListUseCase().collect { todos ->
                         val currentDeleteModes = _state.value.todoList.associate { it.id to it.isDeleteMode }
                         val todoUiModels = TodoMapper.toUiModelList(todos).map { newTodo ->
-                            newTodo.copy(isDeleteMode = currentDeleteModes[newTodo.id] ?: false)
+                            newTodo.copy(isDeleteMode = currentDeleteModes[newTodo.id] == true)
                         }
                         _state.update { it.copy(todoList = todoUiModels) }
                     }

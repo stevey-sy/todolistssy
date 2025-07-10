@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -32,10 +33,6 @@ import com.example.todolistssy.ui.theme.TodoColors
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
 import androidx.compose.animation.core.animateFloatAsState
@@ -47,10 +44,24 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
 fun HomeScreen(
@@ -172,9 +183,16 @@ fun TodoItem(
 ) {
     var totalDragAmount by remember(todo.id) { mutableStateOf(0f) }
     
+    val fadeAlpha by animateFloatAsState(
+        targetValue = if (todo.isSlideOut) 0f else 1f,
+        animationSpec = tween(500),
+        label = "fadeAlpha"
+    )
+    
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .alpha(fadeAlpha)
             .background(Color.White)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
@@ -201,18 +219,75 @@ fun TodoItem(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = todo.isCompleted,
-                onCheckedChange = { onCheckedChange() }
+            // 커스텀 원형 체크박스
+            val checkboxBackgroundColor by animateColorAsState(
+                targetValue = if (todo.isCompleted) TodoColors.Orange else Color.Transparent,
+                animationSpec = tween(400),
+                label = "checkboxBackground"
             )
+            val checkboxBorderColor by animateColorAsState(
+                targetValue = if (todo.isCompleted) TodoColors.Orange else Color.Gray,
+                animationSpec = tween(400),
+                label = "checkboxBorder"
+            )
+            val checkboxScale by animateFloatAsState(
+                targetValue = if (todo.isCompleted) 1.1f else 1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
+                ),
+                label = "checkboxScale"
+            )
+            
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .scale(checkboxScale)
+                    .clip(CircleShape)
+                    .background(checkboxBackgroundColor)
+                    .border(
+                        width = 2.dp,
+                        color = checkboxBorderColor,
+                        shape = CircleShape
+                    )
+                    .clickable { onCheckedChange() },
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = todo.isCompleted,
+                    enter = scaleIn(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
+                        )
+                    ) + fadeIn(animationSpec = tween(300)),
+                    exit = scaleOut(animationSpec = tween(150)) + fadeOut(animationSpec = tween(150))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "완료",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.width(8.dp))
+            
+            val textColor by animateColorAsState(
+                targetValue = if (todo.isCompleted) Color.Gray else Color.Black,
+                animationSpec = tween(400),
+                label = "textColor"
+            )
+            
             Text(
                 text = todo.content,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                color = textColor,
+                textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
             )
             
             // 삭제 버튼 - isDeleteMode에 따라 visibility 조절
-            AnimatedVisibility(
+            androidx.compose.animation.AnimatedVisibility(
                 visible = todo.isDeleteMode,
                 enter = slideInHorizontally(
                     initialOffsetX = { fullWidth -> fullWidth },
