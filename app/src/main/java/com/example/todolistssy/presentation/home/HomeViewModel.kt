@@ -26,6 +26,8 @@ sealed class HomeIntent {
     object AddTodo : HomeIntent()
     data class ToggleComplete(val id: Int) : HomeIntent()
     data class DeleteTodo(val id: Int) : HomeIntent()
+    data class ShowDeleteButton(val id: Int) : HomeIntent()
+    data class HideDeleteButton(val id: Int) : HomeIntent()
     object LoadTodos : HomeIntent()
 }
 
@@ -54,6 +56,14 @@ class HomeViewModel @Inject constructor(
                     if (_state.value.input.isNotBlank()) {
                         addTodoUseCase(_state.value.input)
                         _state.update { it.copy(input = "") }
+                        // 모든 아이템의 삭제 모드를 초기화
+                        _state.update { currentState ->
+                            currentState.copy(
+                                todoList = currentState.todoList.map { todo ->
+                                    todo.copy(isDeleteMode = false)
+                                }
+                            )
+                        }
                         handleIntent(HomeIntent.LoadTodos)
                     }
                 }
@@ -70,10 +80,39 @@ class HomeViewModel @Inject constructor(
                     handleIntent(HomeIntent.LoadTodos)
                 }
             }
+            is HomeIntent.ShowDeleteButton -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        todoList = currentState.todoList.map { todo ->
+                            if (todo.id == intent.id) {
+                                todo.copy(isDeleteMode = true)
+                            } else {
+                                todo
+                            }
+                        }
+                    )
+                }
+            }
+            is HomeIntent.HideDeleteButton -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        todoList = currentState.todoList.map { todo ->
+                            if (todo.id == intent.id) {
+                                todo.copy(isDeleteMode = false)
+                            } else {
+                                todo
+                            }
+                        }
+                    )
+                }
+            }
             is HomeIntent.LoadTodos -> {
                 viewModelScope.launch {
                     getTodoListUseCase().collect { todos ->
-                        _state.update { it.copy(todoList = TodoMapper.toUiModelList(todos)) }
+                        val todoUiModels = TodoMapper.toUiModelList(todos).map {
+                            it.copy(isDeleteMode = false)
+                        }
+                        _state.update { it.copy(todoList = todoUiModels) }
                     }
                 }
             }
