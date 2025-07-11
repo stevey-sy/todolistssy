@@ -3,6 +3,8 @@ package com.example.todolistssy.presentation.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolistssy.domain.usecase.GetCompletedTodoListUseCase
+import com.example.todolistssy.presentation.history.mapper.HistoryMapper
+import com.example.todolistssy.presentation.history.model.HistoryUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*

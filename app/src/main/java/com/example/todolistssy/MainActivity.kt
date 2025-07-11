@@ -6,87 +6,107 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.todolistssy.presentation.home.HomeScreen
-import com.example.todolistssy.presentation.home.HomeViewModel
-import com.example.todolistssy.ui.theme.TodolistssyTheme
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.todolistssy.presentation.history.HistoryScreen
 import com.example.todolistssy.presentation.history.HistoryViewModel
+import com.example.todolistssy.presentation.home.HomeScreen
+import com.example.todolistssy.presentation.home.HomeViewModel
+import com.example.todolistssy.presentation.theme.TodoIcons
+import com.example.todolistssy.presentation.theme.TodolistssyTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             TodolistssyTheme {
-                var isHistoryScreen by remember { mutableStateOf(false) }
-                val homeViewModel: HomeViewModel = hiltViewModel()
-                val historyViewModel: HistoryViewModel = hiltViewModel()
-                
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(text = stringResource(id = R.string.app_title))
-                            },
-                            navigationIcon = {
-                                if (isHistoryScreen) {
-                                    IconButton(onClick = { isHistoryScreen = false }) {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowBack,
-                                            contentDescription = "뒤로가기"
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                if (!isHistoryScreen) {
-                                    IconButton(
-                                        onClick = { isHistoryScreen = true }
-                                    ) {
-                                        Icon(
-                                            imageVector = AppIcons.History,
-                                            contentDescription = "History"
-                                        )
-                                    }
-                                }
-                            }
-                        )
+                TodoApp()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodoApp() {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_title)) },
+                navigationIcon = {
+                    if (currentDestination?.route == "history") {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
                     }
-                ) { innerPadding ->
-                    if (isHistoryScreen) {
-                        HistoryScreen(
-                            viewModel = historyViewModel,
-                            modifier = Modifier.padding(innerPadding)
-                        )
-                    } else {
-                        HomeScreen(
-                            viewModel = homeViewModel,
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                },
+                actions = {
+                    if (currentDestination?.route != "history") {
+                        IconButton(onClick = {
+                            navController.navigate("history") {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }) {
+                            Icon(
+                                imageVector = TodoIcons.History,
+                                contentDescription = "History"
+                            )
+                        }
                     }
                 }
+            )
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "home",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("home") {
+                val homeViewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(
+                    viewModel = homeViewModel
+                )
+            }
+            composable("history") {
+                val historyViewModel: HistoryViewModel = hiltViewModel()
+                HistoryScreen(
+                    viewModel = historyViewModel
+                )
             }
         }
     }

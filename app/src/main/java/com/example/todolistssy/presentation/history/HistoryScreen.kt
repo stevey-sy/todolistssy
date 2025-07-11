@@ -4,15 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.todolistssy.R
+import com.example.todolistssy.presentation.history.component.HistoryItem
 
 @Composable
 fun HistoryScreen(
@@ -40,7 +41,7 @@ fun HistoryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "오류: ${state.error}",
+                    text = stringResource(R.string.error_message),
                     color = Color.Red
                 )
             }
@@ -50,7 +51,7 @@ fun HistoryScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "완료된 할 일이 없습니다.",
+                    text = stringResource(R.string.no_completed_todos),
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
@@ -65,73 +66,6 @@ fun HistoryScreen(
                 ) { todo ->
                     HistoryItem(todo = todo)
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun HistoryItem(
-    todo: HistoryUiModel,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = Color.White,
-        shadowElevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // 등록일
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "등록일:",
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = todo.createdAt,
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // 할 일 내용
-            Text(
-                text = todo.content,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            // 완료일 (우측 정렬)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "완료일:",
-                    fontSize = 12.sp,
-                    color = Color(0xFF4CAF50),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = todo.completedAt,
-                    fontSize = 12.sp,
-                    color = Color(0xFF4CAF50)
-                )
             }
         }
     }
