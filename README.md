@@ -13,12 +13,14 @@
 ###  **비즈니스 로직 (Domain Layer)**
 - **UseCase**: 각 기능별 비즈니스 로직 캡슐화
 - **Domain Model**: 핵심 데이터 모델
-- **MVI Pattern**: 상태 관리 및 사용자 인터랙션 처리
 
 ###  **사용자 인터페이스 (Presentation Layer)**
 - **Jetpack Compose**: 선언적 UI 구성
 - **Navigation**: 화면 간 이동 관리
 - **Common Components**: 재사용 가능한 UI 컴포넌트
+
+### **Architecture**
+- **MVI Pattern**: 상태 관리 및 사용자 인터랙션 처리
 
 ##  설치 환경
 
