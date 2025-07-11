@@ -4,9 +4,9 @@ import com.example.todolistssy.data.repository.TodoRepository
 import javax.inject.Inject
 
 class DeleteTodoUseCase @Inject constructor(
-    private val repository: TodoRepository
+    private val todoRepository: TodoRepository
 ) {
     suspend operator fun invoke(id: Int) {
-        repository.deleteTodo(id)
+        todoRepository.deleteTodo(id)
     }
 } 

@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetCompletedTodoListUseCase @Inject constructor(
-    private val repository: TodoRepository
+    private val todoRepository: TodoRepository
 ) {
     operator fun invoke(): Flow<List<Todo>> {
-        return repository.getCompletedTodos()
+        return todoRepository.getCompletedTodos()
     }
 } 

@@ -5,9 +5,9 @@ import com.example.todolistssy.domain.data.Todo
 import javax.inject.Inject
 
 class CompleteTodoUseCase @Inject constructor(
-    private val repository: TodoRepository
+    private val todoRepository: TodoRepository
 ) {
     suspend operator fun invoke(todo: Todo) {
-        repository.completeTodo(todo)
+        todoRepository.completeTodo(todo)
     }
 } 
