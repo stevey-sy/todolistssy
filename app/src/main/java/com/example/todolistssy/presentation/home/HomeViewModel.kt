@@ -2,13 +2,12 @@ package com.example.todolistssy.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todolistssy.domain.data.Todo
 import com.example.todolistssy.domain.usecase.AddTodoUseCase
 import com.example.todolistssy.domain.usecase.CompleteTodoUseCase
 import com.example.todolistssy.domain.usecase.DeleteTodoUseCase
 import com.example.todolistssy.domain.usecase.GetTodoListUseCase
-import com.example.todolistssy.presentation.home.TodoUiModel
-import com.example.todolistssy.presentation.home.TodoMapper
+import com.example.todolistssy.presentation.home.mapper.TodoUiMapper
+import com.example.todolistssy.presentation.home.model.TodoUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -74,7 +73,7 @@ class HomeViewModel @Inject constructor(
                     // 현재 TodoUiModel 찾기
                     val currentTodo = _state.value.todoList.find { it.id == intent.id }
                     if (currentTodo != null) {
-                        // 1. UI 상태 즉시 업데이트 (체크박스 채우기)
+                        // UI 상태 업데이트
                         _state.update { currentState ->
                             currentState.copy(
                                 todoList = currentState.todoList.map { todo ->
@@ -86,35 +85,23 @@ class HomeViewModel @Inject constructor(
                                 }
                             )
                         }
-                        
-                        // 2. 체크박스 애니메이션이 완료될 때까지 대기
-                        delay(600)
-                        
-                        // 3. 데이터베이스 업데이트
-                        val updatedTodo = TodoMapper.toToggleCompleteTodo(currentTodo)
+                        // 0.5초 딜레이 후 데이터베이스 로직 실행
+                        delay(500)
+                        // 데이터베이스 업데이트
+                        val updatedTodo = TodoUiMapper.toToggleCompleteTodo(currentTodo)
                         completeTodoUseCase(updatedTodo)
                         
-                        // 4. 완료된 아이템이면 슬라이드 아웃 상태로 변경
+                        // 완료된 아이템이면 리스트에서 제거, 미완료면 상태 업데이트
                         if (!currentTodo.isCompleted) { // 체크하는 경우 (미완료 -> 완료)
-                            _state.update { currentState ->
-                                currentState.copy(
-                                    todoList = currentState.todoList.map { todo ->
-                                        if (todo.id == intent.id) {
-                                            todo.copy(isSlideOut = true)
-                                        } else {
-                                            todo
-                                        }
-                                    }
-                                )
-                            }
-                            
-                            // 5. 슬라이드 애니메이션 완료 후 아이템 제거
-                            delay(500)
+                            // 완료된 아이템은 리스트에서 제거
                             _state.update { currentState ->
                                 currentState.copy(
                                     todoList = currentState.todoList.filter { it.id != intent.id }
                                 )
                             }
+                        } else { // 체크 해제하는 경우 (완료 -> 미완료)
+                            // 미완료로 변경하고 다시 로드
+                            handleIntent(HomeIntent.LoadTodos)
                         }
                     }
                 }
@@ -160,13 +147,14 @@ class HomeViewModel @Inject constructor(
                 viewModelScope.launch {
                     getTodoListUseCase().collect { todos ->
                         val currentDeleteModes = _state.value.todoList.associate { it.id to it.isDeleteMode }
-                        val todoUiModels = TodoMapper.toUiModelList(todos).map { newTodo ->
+                        val todoUiModels = TodoUiMapper.toUiModelList(todos).map { newTodo ->
                             newTodo.copy(isDeleteMode = currentDeleteModes[newTodo.id] == true)
                         }
                         _state.update { it.copy(todoList = todoUiModels) }
                     }
                 }
             }
+            // 애니메이션 관련 Intent 제거
         }
     }
 }
