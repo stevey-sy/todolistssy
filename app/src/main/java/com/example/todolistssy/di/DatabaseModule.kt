@@ -3,7 +3,7 @@ package com.example.todolistssy.di
 import android.content.Context
 import androidx.room.Room
 import com.example.todolistssy.data.local.AppDatabase
-import com.example.todolistssy.data.local.CryptoManager
+import com.example.todolistssy.util.CryptoManager
 import com.example.todolistssy.data.local.dao.TodoDao
 import com.example.todolistssy.data.local.datasource.TodoLocalDataSource
 import com.example.todolistssy.data.local.datasource.TodoLocalDataSourceImpl
