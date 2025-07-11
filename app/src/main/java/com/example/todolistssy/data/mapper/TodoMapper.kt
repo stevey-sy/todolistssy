@@ -1,7 +1,7 @@
 package com.example.todolistssy.data.mapper
 
-import com.example.todolistssy.data.local.CryptoManager
-import com.example.todolistssy.data.local.EncryptedData
+import com.example.todolistssy.util.CryptoManager
+import com.example.todolistssy.util.EncryptedData
 import com.example.todolistssy.data.local.entity.TodoEntity
 import com.example.todolistssy.domain.data.Todo
 import javax.inject.Inject
