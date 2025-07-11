@@ -1,5 +1,12 @@
 #  Todo List - SSY
 
+##  설치 환경
+
+- **JDK**: 11 이상
+- **Android Studio**: Arctic Fox 이상 (권장: 최신 Stable 버전)
+- **Gradle**: 8.11.1 (프로젝트 gradle-wrapper.properties에 명시된 버전 사용)
+- **Android SDK**: minSdk 26 / targetSdk 35
+
 ##  프로젝트 구조
 
 ###  **데이터 관리 (Data Layer)**
@@ -21,11 +28,4 @@
 
 ### **Architecture**
 - **MVI Pattern**: 상태 관리 및 사용자 인터랙션 처리
-
-##  설치 환경
-
-- **JDK**: 11 이상
-- **Android Studio**: Arctic Fox 이상 (권장: 최신 Stable 버전)
-- **Gradle**: 8.11.1 (프로젝트 gradle-wrapper.properties에 명시된 버전 사용)
-- **Android SDK**: minSdk 26 / targetSdk 35
 
