@@ -10,4 +10,5 @@ object TodoColors {
     val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
     val StealGray = Color(0xFF71797E)
+    val Green = Color(0xFF50C878)
 }

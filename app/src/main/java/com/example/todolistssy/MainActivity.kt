@@ -7,8 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todolistssy.presentation.common.TodoAppBar
@@ -34,6 +37,14 @@ fun TodoApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    
+    // 시스템 바 색상을 검정색으로 설정
+    val view = LocalView.current
+    SideEffect {
+        val window = (view.context as ComponentActivity).window
+        window.statusBarColor = android.graphics.Color.BLACK
+        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

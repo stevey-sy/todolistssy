@@ -7,12 +7,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.todolistssy.R
+import com.example.todolistssy.presentation.theme.TodoColors
 import com.example.todolistssy.presentation.theme.TodoIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,7 +24,7 @@ fun TodoAppBar(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
-    
+
     val routeHistory = stringResource(R.string.route_history)
     val titleHistory = stringResource(R.string.title_history)
     val titleHome = stringResource(R.string.app_title)
@@ -29,11 +32,12 @@ fun TodoAppBar(
     TopAppBar(
         title = { 
             Text(
-                if (currentDestination?.route == routeHistory) {
+                text = if (currentDestination?.route == routeHistory) {
                     titleHistory
                 } else {
                     titleHome
-                }
+                },
+                color = TodoColors.White
             )
         },
         navigationIcon = {
@@ -41,7 +45,8 @@ fun TodoAppBar(
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back)
+                        contentDescription = stringResource(R.string.back),
+                        tint = TodoColors.White
                     )
                 }
             }
@@ -59,10 +64,14 @@ fun TodoAppBar(
                 }) {
                     Icon(
                         imageVector = TodoIcons.History,
-                        contentDescription = titleHistory
+                        contentDescription = titleHistory,
+                        tint = TodoColors.White
                     )
                 }
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = TodoColors.Black
+        )
     )
 } 

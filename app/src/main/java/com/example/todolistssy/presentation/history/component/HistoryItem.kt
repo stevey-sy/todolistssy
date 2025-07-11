@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.example.todolistssy.R
 import com.example.todolistssy.presentation.history.model.HistoryUiModel
+import com.example.todolistssy.presentation.theme.TodoColors
 
 @Composable
 fun HistoryItem(
@@ -22,7 +23,7 @@ fun HistoryItem(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+        color = TodoColors.White,
         shadowElevation = 2.dp
     ) {
         Column(
@@ -35,14 +36,14 @@ fun HistoryItem(
                 Text(
                     text = stringResource(R.string.created_date),
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = TodoColors.NormalGray,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = todo.createdAt,
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = TodoColors.NormalGray
                 )
             }
             
@@ -53,7 +54,7 @@ fun HistoryItem(
                 text = todo.content,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = TodoColors.Black
             )
             
             Spacer(modifier = Modifier.height(8.dp))
@@ -67,14 +68,14 @@ fun HistoryItem(
                 Text(
                     text = stringResource(R.string.completed_date),
                     fontSize = 12.sp,
-                    color = Color(0xFF4CAF50),
+                    color = TodoColors.Green,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = todo.completedAt,
                     fontSize = 12.sp,
-                    color = Color(0xFF4CAF50)
+                    color = TodoColors.Green
                 )
             }
         }
