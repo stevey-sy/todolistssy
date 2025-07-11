@@ -37,8 +37,7 @@ fun TodoApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    
-    // 시스템 바 색상을 검정색으로 설정
+
     val view = LocalView.current
     SideEffect {
         val window = (view.context as ComponentActivity).window
