@@ -14,6 +14,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import com.example.todolistssy.R
 import com.example.todolistssy.presentation.history.component.HistoryItem
+import com.example.todolistssy.presentation.history.component.LoadingBox
+import com.example.todolistssy.presentation.history.component.ErrorBox
+import com.example.todolistssy.presentation.history.component.EmptyBox
+import com.example.todolistssy.presentation.theme.TodoColors
 
 @Composable
 fun HistoryScreen(
@@ -25,46 +29,23 @@ fun HistoryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF6F6F8))
+            .background(TodoColors.LightGray)
             .padding(16.dp)
     ) {
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (state.error != null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.error_message),
-                    color = Color.Red
-                )
-            }
-        } else if (state.completedTodoList.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.no_completed_todos),
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = state.completedTodoList,
-                    key = { todo -> todo.id }
-                ) { todo ->
-                    HistoryItem(todo = todo)
+        when {
+            state.isLoading -> LoadingBox()
+            state.error != null -> ErrorBox()
+            state.completedTodoList.isEmpty() -> EmptyBox()
+            else -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = state.completedTodoList,
+                        key = { todo -> todo.id }
+                    ) { todo ->
+                        HistoryItem(todo = todo)
+                    }
                 }
             }
         }

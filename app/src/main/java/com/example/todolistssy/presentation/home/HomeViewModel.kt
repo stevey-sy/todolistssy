@@ -56,7 +56,6 @@ class HomeViewModel @Inject constructor(
                     if (_state.value.input.isNotBlank()) {
                         addTodoUseCase(_state.value.input)
                         _state.update { it.copy(input = "") }
-                        // 모든 아이템의 삭제 모드를 초기화
                         _state.update { currentState ->
                             currentState.copy(
                                 todoList = currentState.todoList.map { todo ->
@@ -154,7 +153,6 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             }
-            // 애니메이션 관련 Intent 제거
         }
     }
 }

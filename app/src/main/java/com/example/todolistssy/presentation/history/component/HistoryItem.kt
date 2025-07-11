@@ -58,7 +58,7 @@ fun HistoryItem(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // 완료일 (우측 정렬)
+            // 완료일
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
