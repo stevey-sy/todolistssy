@@ -16,4 +16,11 @@
     
     <!-- Common -->
     <string name="back">뒤로가기</string>
+    
+    <!-- Route Names -->
+    <string name="route_home">home</string>
+    <string name="route_history">history</string>
+    
+    <!-- Screen Titles -->
+    <string name="title_history">History</string>
 </resources>

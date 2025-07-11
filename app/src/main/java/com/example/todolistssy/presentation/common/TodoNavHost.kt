@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.todolistssy.R
 import com.example.todolistssy.presentation.history.HistoryScreen
 import com.example.todolistssy.presentation.history.HistoryViewModel
 import com.example.todolistssy.presentation.home.HomeScreen
@@ -18,18 +20,22 @@ fun TodoNavHost(
     navController: NavHostController,
     innerPadding: PaddingValues
 ) {
+    // strings.xml에서 route 이름들을 가져옴
+    val routeHome = stringResource(R.string.route_home)
+    val routeHistory = stringResource(R.string.route_history)
+    
     NavHost(
         navController = navController,
-        startDestination = "home",
+        startDestination = routeHome,
         modifier = Modifier.padding(innerPadding)
     ) {
-        composable("home") {
+        composable(routeHome) {
             val homeViewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = homeViewModel
             )
         }
-        composable("history") {
+        composable(routeHistory) {
             val historyViewModel: HistoryViewModel = hiltViewModel()
             HistoryScreen(
                 viewModel = historyViewModel

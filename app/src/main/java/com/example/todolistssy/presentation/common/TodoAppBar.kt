@@ -21,18 +21,23 @@ fun TodoAppBar(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
+    
+    val routeHistory = stringResource(R.string.route_history)
+    val titleHistory = stringResource(R.string.title_history)
+    val titleHome = stringResource(R.string.app_title)
+    
     TopAppBar(
         title = { 
             Text(
-                if (currentDestination?.route == "history") {
-                    "History"
+                if (currentDestination?.route == routeHistory) {
+                    titleHistory
                 } else {
-                    stringResource(R.string.app_title)
+                    titleHome
                 }
             )
         },
         navigationIcon = {
-            if (currentDestination?.route == "history") {
+            if (currentDestination?.route == routeHistory) {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -42,9 +47,9 @@ fun TodoAppBar(
             }
         },
         actions = {
-            if (currentDestination?.route != "history") {
+            if (currentDestination?.route != routeHistory) {
                 IconButton(onClick = {
-                    navController.navigate("history") {
+                    navController.navigate(routeHistory) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -54,7 +59,7 @@ fun TodoAppBar(
                 }) {
                     Icon(
                         imageVector = TodoIcons.History,
-                        contentDescription = "History"
+                        contentDescription = titleHistory
                     )
                 }
             }
