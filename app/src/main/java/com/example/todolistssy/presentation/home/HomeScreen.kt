@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.todolistssy.R
 import com.example.todolistssy.presentation.home.component.TodoItem
 import com.example.todolistssy.presentation.theme.TodoColors
+import com.example.todolistssy.util.advancedImePadding
 
 @Composable
 fun HomeScreen(
@@ -47,8 +48,6 @@ fun HomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .imePadding()
-            .padding(bottom = 12.dp)
             .background(TodoColors.LightGray)
     ) {
         // 할 일 목록
@@ -57,6 +56,7 @@ fun HomeScreen(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp)
+//                .padding(bottom = 80.dp) // Surface 높이만큼 bottom padding
         ) {
             items(
                 items = state.todoList,
@@ -77,7 +77,8 @@ fun HomeScreen(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .advancedImePadding()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             shape = RoundedCornerShape(16.dp),
             color = Color.White,
             shadowElevation = 4.dp
